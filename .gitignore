@@ -30,3 +30,13 @@
 *.exe
 *.out
 *.app
+
+
+# Floders
+/temp/
+/.vscode/
+/design/
+
+# 
+main
+test
