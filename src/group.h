@@ -334,6 +334,7 @@ group::MD group::ChamHash::forge(std::string m, MD md) {
 
 } // namespace group
 
+// TODO
 // 全局变量，放在这里有些奇怪，以后要改
 group::ChamHash my_hash;
 
@@ -403,7 +404,7 @@ inline void trans_aes_key_from_string(std::string &m, byte *key, byte *iv, int l
     iv = (byte *)m2.c_str();
     return;
 }
-
+// TODO
 inline void trans_elgamalpk_from_string(std::string tmp, ElGamalKeys::PublicKey &publickey) {
     CryptoPP::HexDecoder decoder;
     decoder.Put((byte *)tmp.c_str(), tmp.size());
@@ -633,6 +634,10 @@ void serial_to_string(T &tuple, std::string &message) {
     return;
 }
 
+/**
+ * @brief 将RK元组序列化到文件
+ * @param tuple 
+ */
 void serial_to_file(RK &tuple) {
     string filename_and_path(TUPLES + tuple.username + "_" + tuple.rolename + "_" + to_string(tuple.version_role) + suffix);
     std::ofstream os_file(filename_and_path.c_str(), ios::binary);
@@ -645,6 +650,10 @@ void serial_to_file(RK &tuple) {
     return;
 }
 
+/**
+ * @brief 将FK元组序列化到文件
+ * @param tuple 
+ */
 void serial_to_file(FK &tuple) {
     string filename_and_path(TUPLES + tuple.rolename + "_" + tuple.filename + "_" + to_string(tuple.version_role) + "_" + to_string(tuple.version_file) + suffix);
     std::ofstream os_file(filename_and_path.c_str(), ios::binary);
@@ -657,6 +666,10 @@ void serial_to_file(FK &tuple) {
     return;
 }
 
+/**
+ * @brief 将F元组序列化至文件
+ * @param tuple 
+ */
 void serial_to_file(const F &tuple) {
     string filename_and_path(TUPLES + tuple.filename + suffix);
     std::ofstream os_file(filename_and_path.c_str(), ios::binary);
@@ -671,7 +684,7 @@ void serial_to_file(const F &tuple) {
 
 
 /**
- * @brief 元组反序列化函数。
+ * @brief 元组反序列化函数：从字符串反序列化
  * @tparam T 
  * @param tuple 
  * @param content 
@@ -684,6 +697,12 @@ void unserial_from_string(T &tuple, const std::string &content) {
     return;
 }
 
+/**
+ * @brief 元组反序列化函数：从文件反序列化
+ * @tparam T 
+ * @param tuple 
+ * @param filename 
+ */
 template <class T>
 void unserial_from_file(T &tuple, const std::string &filename) {
     //首先下载元组
@@ -737,7 +756,9 @@ class pair_role_file {
  * @brief 该类用于保存用户的公私钥，并提供了序列化功能
  */
 class User {
+    // Boost.Serialization 库能够将c++项目中的对象转换为一序列的比特（bytes），用来保存和加载还原对象
   private:
+    // access对象可以访问User的私有成员
     friend class boost::serialization::access;
     template <class Archive>
     void serialize(Archive &ar, const unsigned int version) {
@@ -760,10 +781,24 @@ class User {
     std::string _g;
     std::string _y;
 
+    /**
+     * @brief Construct a new User object
+     * @param username 
+     * @param pvkey 
+     * @param pbkey 
+     * @param pvsign 
+     * @param pbsign 
+     * @param g 
+     * @param y 
+     */
     User(std::string username, std::string pvkey, std::string pbkey, std::string pvsign, std::string pbsign, std::string g, std::string y) : _username(username), _pvkey(pvkey), _pbkey(pbkey), _pvsign(pvsign), _pbsign(pbsign), _g(g), _y(y) {}
 
     User() : _username(""), _pvkey(""), _pbkey(""), _pvsign(""), _pbsign(""), _g(""), _y("") {}
 
+    /**
+     * @brief Set the pvkey object
+     * @param pvkey 
+     */
     void set_pvkey(const std::string &pvkey) { _pvkey = pvkey; }
     void set_pbkey(const std::string &pbkey) { _pbkey = pbkey; }
     void set_pvsign(const std::string &pvsign) { _pvsign = pvsign; }
@@ -771,6 +806,10 @@ class User {
     void set_g(const std::string &g) { _g = g; }
     void set_y(const std::string &y) { _y = y; }
 
+    /**
+     * @brief Get the pvkey object
+     * @return std::string 
+     */
     std::string get_pvkey() { return _pvkey; }
     std::string get_pbkey() { return _pbkey; }
     std::string get_pvsign() { return _pvsign; }
@@ -778,6 +817,9 @@ class User {
     std::string get_g() { return _g; }
     std::string get_y() { return _y; }
 
+    /**
+     * @brief 序列化
+     */
     void serial() {
         std::ofstream os_file((USERS + _username + suffix).c_str(), ios::binary);
         if (!os_file)
@@ -787,8 +829,11 @@ class User {
         os_file.close();
     }
 
-    void unserial(std::string filename) //f
-    {
+    /**
+     * @brief 反序列化
+     * @param filename 
+     */
+    void unserial(std::string filename) {
         std::ifstream is_file((USERS + filename + suffix).c_str(), ios::binary);
         if (!is_file)
             cout << "open USER file fail";
@@ -829,8 +874,7 @@ class Role {
         oa << *this;
         os_file.close();
     }
-    void unserial(std::string filename) //f
-    {
+    void unserial(std::string filename) {
         std::ifstream is_file((ROLES + filename + suffix).c_str(), ios::binary);
         if (!is_file)
             cout << "open file fail in role unserial";
@@ -865,8 +909,7 @@ class File {
         oa << *this;
         os_file.close();
     }
-    void unserial(std::string filename) //f
-    {
+    void unserial(std::string filename) {
         std::ifstream is_file((FILES + filename + suffix).c_str(), ios::binary);
         if (!is_file)
             cout << "open file fail in file unserial";

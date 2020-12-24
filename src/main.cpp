@@ -53,8 +53,7 @@ void test_rotation() {
         cout << cur << endl;
         cur = BDri(rsk, cur, N);
     }
-    cout << cur << endl
-         << endl;
+    cout << cur << endl << endl;
     vector<ZZ> result = FDri(rpk, cur, 10, N);
     for (int i = 0; i < 10; i++) {
         cout << result[i] << endl;

@@ -7,13 +7,16 @@
  */
 inline void generate_elgamal(ElGamalKeys::PrivateKey &privatekey, ElGamalKeys::PublicKey &publickey, bool tag) {
     //cout << "Generating private key. This may take some time..." << endl;
+    // 生成私钥对
     if (tag) {
         AutoSeededRandomPool rng;
         privatekey.GenerateRandomWithKeySize(rng, 1024);
         ElGamal::Decryptor decryptor(privatekey);
         ElGamal::Encryptor encryptor(decryptor);
         publickey = encryptor.AccessKey();
-    } else {
+    }
+    // 从文件导入公私钥对 
+    else {
         privatekey.Load(FileSource(elgamal_key_priv.c_str(), true, NULL, true /*binary*/).Ref());
         publickey.Load(FileSource(elgamal_key_pub.c_str(), true, NULL, true /*binary*/).Ref());
     }
@@ -45,14 +48,13 @@ inline void generate_dsa(DSA::PrivateKey &role_signprivatekey, DSA::PublicKey &r
  * @brief 产生elgamal的公私钥对(生成新的用户)
  * @param username 
  */
-void generate_user(std::string username) //产生elgamal的公私钥
-{
+void generate_user(std::string username) {
     cout << "Generating " + username << endl;
 
     ElGamalKeys::PrivateKey privatekey;
     ElGamalKeys::PublicKey publickey;
     generate_elgamal(privatekey, publickey, false);
-    //将公私钥编码放入User中
+    // 将公私钥编码放入User中
     std::string pvkey;
     std::string pbkey;
     trans_elgamalsk_to_string(pvkey, privatekey);
@@ -61,7 +63,7 @@ void generate_user(std::string username) //产生elgamal的公私钥
     DSA::PrivateKey role_signprivatekey;
     DSA::PublicKey role_signpublickey;
     generate_dsa(role_signprivatekey, role_signpublickey, false);
-
+    // 将签名密钥密钥对编码放入User中
     std::string pvsign;
     std::string pbsign;
     trans_dsa_signsk_to_string(pvsign, role_signprivatekey);
@@ -81,12 +83,12 @@ void generate_role(std::string rolename) {
     ElGamalKeys::PrivateKey privatekey;
     ElGamalKeys::PublicKey publickey;
     generate_elgamal(privatekey, publickey, false);
-    //将公私钥编码放入User中
+    // 将公私钥编码放入Role中
     std::string pvkey;
     std::string pbkey;
     trans_elgamalsk_to_string(pvkey, privatekey);
     trans_elgamalpk_to_string(pbkey, publickey);
-
+    // 将签名密钥对放入Role中
     DSA::PrivateKey role_signprivatekey;
     DSA::PublicKey role_signpublickey;
     generate_dsa(role_signprivatekey, role_signpublickey, false);
@@ -203,7 +205,11 @@ void decrypt(ElGamal::Decryptor &decryptor, std::string &recovered, std::string 
         recovered = recovered + recover[i];
     }
 }
-
+/**
+ * @brief 初始化生成num个用户
+ * @param num 
+ * @param username 
+ */
 void init_users(int num, vector<std::string> &username) {
     for (int i = 0; i < num; i++) {
         string tmp("user" + to_string(i));
@@ -213,6 +219,11 @@ void init_users(int num, vector<std::string> &username) {
     return;
 }
 
+/**
+ * @brief 初始化生成num个角色
+ * @param num 
+ * @param rolename 
+ */
 void init_roles(int num, vector<std::string> &rolename) {
     for (int i = 0; i < num; i++) {
         string tmp("role" + to_string(i));
@@ -222,6 +233,11 @@ void init_roles(int num, vector<std::string> &rolename) {
     return;
 }
 
+/**
+ * @brief 初始化生成num个文件
+ * @param num 
+ * @param filename 
+ */
 void init_files(int num, vector<std::string> &filename) {
     for (int i = 0; i < num; i++) {
         string tmp("file" + to_string(i));
@@ -259,12 +275,13 @@ void init_topu(vector<std::string> &username, int usernum, vector<std::string> &
 }
 
 /**
- * @brief 初始化
+ * @brief 将拓扑生成的映射关系初始化
  * @param user_role 
  * @param role_file 
  */
 void init(vector<pair_user_role> &user_role, vector<pair_role_file> &role_file) {
     DSA::PrivateKey privatekey;
+    // 从文件里加载签名私钥
     privatekey.Load(FileSource(sign_key_priv.c_str(), true, NULL, true /*binary*/).Ref());
     for (int i = 0; i < user_role.size(); i++) {
         std::string username = user_role[i]._username;
@@ -278,6 +295,7 @@ void init(vector<pair_user_role> &user_role, vector<pair_role_file> &role_file) 
 
         ElGamalKeys::PublicKey publickey;
         trans_elgamalpk_from_string(user._pbkey, publickey);
+        // TODO
         ElGamal::Encryptor encryptor(publickey);
         std::string rolekey;
         std::string rolesign;
@@ -289,8 +307,9 @@ void init(vector<pair_user_role> &user_role, vector<pair_role_file> &role_file) 
         rk.rolename = rolename;
         rk.crypto_rolekey = rolekey;
         rk.crypto_rolesign = rolesign;
-
+        // 对RK元组签名
         rk.sign(privatekey);
+        // 序列化至文件
         serial_to_file(rk);
     }
 
@@ -304,6 +323,7 @@ void init(vector<pair_user_role> &user_role, vector<pair_role_file> &role_file) 
         file.unserial(filename);
         ElGamalKeys::PublicKey publickey;
         trans_elgamalpk_from_string(role._pbkey, publickey);
+        // TODO
         ElGamal::Encryptor encryptor(publickey);
 
         FK fk;
