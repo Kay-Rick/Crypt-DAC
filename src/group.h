@@ -99,12 +99,7 @@ ZZ N; //安全系数
 ZZ rpk;
 ZZ rsk;
 ZZ fi;
-
-/**
- * @brief 辅助函数
- * @param num 
- * @return string 
- */
+/* 
 string to_string(int num) {
     std::stringstream ss;
     std::string str;
@@ -112,7 +107,13 @@ string to_string(int num) {
     ss >> str;
     return str;
 }
+ */
 
+/**
+ * @brief 从文件名为filename的文件中读取内容到字符串m
+ * @param filename 
+ * @param m 
+ */
 void read_from_file(const string &filename, string &m) {
     ifstream rfile(filename.c_str(), ios::binary);
     if (!rfile)
@@ -124,7 +125,7 @@ void read_from_file(const string &filename, string &m) {
 }
 
 /**
- * @brief 默认app
+ * @brief 将文件内容blocktext写入到名为filename的文件中
  * @param filename 
  * @param blocktext 
  */
@@ -137,6 +138,9 @@ void write_to_file(const string &filename, string &blocktext) {
     return;
 }
 
+/**
+ * @brief 发送文件到服务器（更新）
+ */
 void send_to_server() {
     string tmp = "python test.py upload " + UPDATES;
     int status = system(tmp.c_str());
@@ -154,15 +158,22 @@ void send_to_server() {
 	*/
 }
 
+/**
+ * @brief 发送文件到服务器
+ * @param filename_and_path 
+ */
 void send_to_server(string filename_and_path) {
     string tmp = "python test.py upload " + filename_and_path;
+    // system函数发出命令，通过python编译的文件上传文件
     int status = system(tmp.c_str());
     if (status == -1)
         cout << "system()失败！" << endl;
     return;
 }
 
-// 命名空间group
+/**
+ * @brief 该命名空间用来实现与可变哈希相关的函数，以及相关的序列化函数
+ */
 namespace group {
 std::string p_t = "154832590885624877771060372806205385413142391566678508396446386791765289133151890555903226060612469794823636335716361477716811201889616957164323746637059223973296263052495236079057879936758234229218100933167771139308703317575246829476543387421928000740455970241206725495181995400476210600223963943361549656067";
 std::string q_t = "77416295442812438885530186403102692706571195783339254198223193395882644566575945277951613030306234897411818167858180738858405600944808478582161873318529611986648131526247618039528939968379117114609050466583885569654351658787623414738271693710964000370227985120603362747590997700238105300111981971680774828033";
@@ -204,6 +215,7 @@ class ChamHash {
     MD forge(std::string m, MD md);
 };
 
+// TODO
 void group::IntegerGroup::paramgen(int bits, int s) {
     std::stringstream tmp(group::p_t);
     tmp >> p;
@@ -259,7 +271,7 @@ void group::ChamHash::setsk(SK _sk) {
     sk = _sk;
     return;
 }
-
+// TODO ：理解
 group::MD group::ChamHash::hash(std::string m, ZZ r, ZZ s) {
     ZZ p = group.p;
     ZZ q = group.q;
@@ -332,19 +344,32 @@ group::MD group::ChamHash::forge(std::string m, MD md) {
     return md;
 }
 
-} // namespace group
+}
 
-// TODO
-// 全局变量，放在这里有些奇怪，以后要改
+
+// TODO 全局变量
 group::ChamHash my_hash;
 
+/**
+ * @brief Get the pkhash object
+ * @return group::PK 
+ */
 group::PK get_pkhash() {
     return my_hash.pk;
 }
+/**
+ * @brief Get the skhash object
+ * @return group::SK 
+ */
 group::SK get_skhash() {
     return my_hash.sk;
 }
 
+/**
+ * @brief 将大整型数c转换成字符串存储在m中
+ * @param c 
+ * @param m 
+ */
 void trans_zz_to_string(const ZZ &c, std::string &m) {
     int len = NumBytes(c);
     //unsigned char msg[len];
@@ -354,49 +379,100 @@ void trans_zz_to_string(const ZZ &c, std::string &m) {
     return;
 }
 
+/**
+ * @brief 将字符串m转换成大整型数c
+ * @param c 
+ * @param m 
+ */
 void trans_zz_from_string(ZZ &c, std::string &m) {
     int len = m.size();
     ZZFromBytes(c, (unsigned char *)m.c_str(), len);
     return;
 }
 
+/**
+ * @brief 把字符串m转换成公钥pk
+ * @param m 
+ * @param pk 
+ */
 inline void trnas_dsa_signpk_from_string(std::string &m, DSA::PublicKey &pk) {
     pk.Load(StringStore(m).Ref());
     return;
 }
 
+/**
+ * @brief 将字符串m转换成私钥sk
+ * @param m 
+ * @param sk 
+ */
 inline void trans_dsa_signsk_from_string(std::string &m, DSA::PrivateKey &sk) {
     sk.Load(StringStore(m).Ref());
     return;
 }
 
+/**
+ * @brief 将公钥pk转换到字符串m存储
+ * @param m 
+ * @param pk 
+ */
 inline void trans_dsa_signpk_to_string(std::string &m, DSA::PublicKey &pk) {
     pk.Save(StringSink(m).Ref());
     return;
 }
 
+/**
+ * @brief 将私钥sk转换到字符串m存储
+ * @param m 
+ * @param sk 
+ */
 inline void trans_dsa_signsk_to_string(std::string &m, DSA::PrivateKey &sk) {
     sk.Save(StringSink(m).Ref());
     return;
 }
 
+/**
+ * @brief 将密钥key转换成字符串m存储
+ * @tparam T 
+ * @param m 
+ * @param key 
+ */
 template <class T>
 inline void trans_to_string(std::string &m, T &key) {
     key.Save(StringSink(m).Ref());
     return;
 }
 
+/**
+ * @brief 将字符串m转换成密钥key存储
+ * @tparam T 
+ * @param m 
+ * @param key 
+ */
 template <class T>
 inline void trans_from_string(std::string &m, T &key) {
     key.Load(StringStore(m).Ref());
     return;
 }
 
+/**
+ * @brief 将AES密钥转换成字符串
+ * @param m 
+ * @param key 
+ * @param iv 
+ * @param len 
+ */
 inline void trans_aes_key_to_string(std::string &m, byte key[], byte iv[], int len = 16) {
     m = std::string((const char *)key, 16) + std::string((const char *)iv, 16);
     return;
 }
 
+/**
+ * @brief 把AES密钥转换成字符串
+ * @param m 
+ * @param key 
+ * @param iv 
+ * @param len 
+ */
 inline void trans_aes_key_from_string(std::string &m, byte *key, byte *iv, int len = 16) {
     std::string m1(m.begin(), m.begin() + 16);
     std::string m2(m.begin() + 16, m.end());
@@ -404,7 +480,12 @@ inline void trans_aes_key_from_string(std::string &m, byte *key, byte *iv, int l
     iv = (byte *)m2.c_str();
     return;
 }
-// TODO
+
+/**
+ * @brief 将16进制编码的字符串解码为公钥
+ * @param tmp 
+ * @param publickey 
+ */
 inline void trans_elgamalpk_from_string(std::string tmp, ElGamalKeys::PublicKey &publickey) {
     CryptoPP::HexDecoder decoder;
     decoder.Put((byte *)tmp.c_str(), tmp.size());
@@ -424,6 +505,11 @@ inline void trans_elgamalsk_from_string(std::string tmp, ElGamalKeys::PrivateKey
     privatekey.Load(decoder);
 }
 
+/**
+ * @brief 将公钥编码为字符串存储
+ * @param m 
+ * @param publickey 
+ */
 inline void trans_elgamalpk_to_string(std::string &m, ElGamalKeys::PublicKey &publickey) {
     CryptoPP::HexEncoder encoder_pb;
     encoder_pb.Attach(new CryptoPP::StringSink(m));
@@ -431,6 +517,11 @@ inline void trans_elgamalpk_to_string(std::string &m, ElGamalKeys::PublicKey &pu
     return;
 }
 
+/**
+ * @brief 将私钥编码为字符串存储
+ * @param m 
+ * @param privatekey 
+ */
 inline void trans_elgamalsk_to_string(std::string &m, ElGamalKeys::PrivateKey &privatekey) {
     CryptoPP::HexEncoder encoder_pv;
     encoder_pv.Attach(new CryptoPP::StringSink(m));
@@ -438,6 +529,15 @@ inline void trans_elgamalsk_to_string(std::string &m, ElGamalKeys::PrivateKey &p
     return;
 }
 
+/**
+ * @brief 签名
+ * @param message 
+ * @param signature 
+ * @param pkhash 
+ * @param skhash 
+ * @param privatekey 
+ * @return group::MD 
+ */
 group::MD _sign(const std::string &message, std::string &signature, group::PK pkhash, group::SK skhash, DSA::PrivateKey &privatekey) {
     //先做哈希
     group::ChamHash cham;
@@ -620,7 +720,7 @@ class F {
 
 
 /**
- * @brief 元组序列化函数。将??地生成的元组对象序列化、签名、保存至本地文件、上传文件。
+ * @brief 元组序列化函数。将新生成的元组对象序列化、签名、保存至本地文件、上传文件。
  * @tparam T 
  * @param tuple 
  * @param message 
@@ -843,6 +943,9 @@ class User {
     }
 };
 
+/**
+ * @brief Role类
+ */
 class Role {
   private:
     friend class boost::serialization::access;
@@ -884,6 +987,9 @@ class Role {
     }
 };
 
+/**
+ * @brief 文件类
+ */
 class File {
   private:
     friend class boost::serialization::access;
@@ -921,7 +1027,7 @@ class File {
 
 
 /**
- * @brief 封装新的AES
+ * @brief 封装新的AES密钥
  * @param key 
  */
 void generate_aeskey(string &key) {
@@ -934,7 +1040,7 @@ void generate_aeskey(string &key) {
 }
 
 /**
- * @brief 加密
+ * @brief AES加密
  * @param k 
  * @param cipher 
  * @param plain 
@@ -952,7 +1058,7 @@ void aes_e(string &k, string &cipher, string &plain) {
 }
 
 /**
- * @brief 解密文件
+ * @brief AES解密
  * @param k 
  * @param cipher 
  * @param plain 
@@ -968,6 +1074,12 @@ void aes_d(string &k, string &cipher, string &plain) {
     cfbDecryption.ProcessData((byte *)plain.c_str(), (byte *)plain.c_str(), plain.size());
 }
 
+/**
+ * @brief AES解密文件
+ * @param c 
+ * @param f 
+ * @param plain 
+ */
 void aes_file(cipher_fk &c, F &f, string &plain) {
     int t = c.t;
     ZZ k;
@@ -994,6 +1106,12 @@ void aes_file(cipher_fk &c, F &f, string &plain) {
     return;
 }
 
+/**
+ * @brief AES加密文件
+ * @param c 
+ * @param cipher 
+ * @param plain 
+ */
 void aes_file_e(cipher_fk &c, string &cipher, string &plain) {
     int t = c.t;
     ZZ k;
@@ -1013,6 +1131,7 @@ void aes_file_e(cipher_fk &c, string &cipher, string &plain) {
     }
     return;
 }
+
 
 void aes_file_e_more_test(cipher_fk &c, string &cipher, string &plain, int count) {
     int t = c.t;

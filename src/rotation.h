@@ -105,8 +105,7 @@ ZZ getrsk(ZZ &rpk, ZZ &fi) {
  * @param N 
  * @return ZZ 
  */
-ZZ BDri(ZZ &rsk, ZZ &cur, ZZ &N)
-{
+ZZ BDri(ZZ &rsk, ZZ &cur, ZZ &N) {
     ZZ next;
     if (cur > N)
         cout << "too big" << endl;
