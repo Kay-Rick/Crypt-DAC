@@ -86,7 +86,7 @@ ZZ getrsk(ZZ &rpk, ZZ &fi) {
 }
 
 /**
- * @brief 根据私钥和当前密钥，让所有者获得下一个的密钥
+ * @brief 根据私钥和当前吊销密钥序列，让所有者获得下一个的吊销密钥
  * @param rsk 
  * @param cur 
  * @param N 
@@ -99,7 +99,7 @@ ZZ BDri(ZZ rsk, ZZ cur, ZZ N) {
 }
 
 /**
- * @brief 根据公钥和当前密钥，让用户获得以前所有的密钥
+ * @brief 根据公钥和当前密钥，让用户获得以前所有的吊销密钥序列
  * @param rpk 
  * @param cur 
  * @param t 

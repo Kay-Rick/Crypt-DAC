@@ -11,6 +11,9 @@ const string upload_file_time = "//home//lyc//ntl//key_rotation_version//upload_
 const string user_revocation_time_f = "//home//lyc//ntl//key_rotation_version//user_revocation_time_f_ro.txt";
 const string user_revocation_time_rk_fk = "//home//lyc//ntl//key_rotation_version//user_revocation_time_rk_fk_ro.txt";
 
+/**
+ * @brief 产生公钥私钥对存到文件中
+ */
 void test_genkey() {
     AutoSeededRandomPool rng;
     DSA::PrivateKey privatekey;
@@ -31,6 +34,9 @@ void test_genkey() {
     return;
 }
 
+/**
+ * @brief 生成旋转密钥对的公钥rpk和私钥rsk
+ */
 void test_gen() {
     ZZ p = gen_prime();
     ZZ q = gen_prime();
@@ -43,6 +49,9 @@ void test_gen() {
     my_hash.keygen();
 }
 
+/**
+ * @brief 测试密钥旋转
+ */
 void test_rotation() {
     test_gen();
     ZZ rsk = getrsk(rpk, fi);
@@ -61,6 +70,9 @@ void test_rotation() {
     return;
 }
 
+/**
+ * @brief 测试初始化
+ */
 void test_init() {
     vector<string> username;
     vector<string> rolename;
@@ -73,6 +85,12 @@ void test_init() {
     init(user_role, role_file);
 }
 
+/**
+ * @brief 测试生成相应topu关系
+ * @param user 
+ * @param role 
+ * @param file 
+ */
 void test_init_topu(int user, int role, int file) {
     vector<string> username;
     vector<string> rolename;
@@ -95,6 +113,9 @@ void test_init_topu(int user, int role, int file) {
     init_topu(username, username.size(), rolename, rolename.size(), filename, filename.size(), user_role, role_file);
 }
 
+/**
+ * @brief 测试用户读文件
+ */
 void test_read() {
     struct timeval start, end;
     double interval;
@@ -114,6 +135,9 @@ void test_read() {
     return;
 }
 
+/**
+ * @brief 测试用户写文件
+ */
 void test_write() {
     string content;
     int size = 1000000;
@@ -127,6 +151,7 @@ void test_write() {
         system(line.c_str());
 
         gettimeofday(&start, NULL);
+        // TODO : 未验证user写入权限，加密层数变化？
         File_write("file1", content, role_file);
         send_to_server();
         gettimeofday(&end, NULL);
@@ -138,6 +163,7 @@ void test_write() {
     return;
 }
 
+// TODO
 void test_write_20() {
     string content;
     content.resize(10010000);
@@ -161,6 +187,10 @@ void test_write_20() {
     return;
 }
 
+/**
+ * @brief 测试上传F元组
+ * @param filename 
+ */
 void test_upload_f(string filename) {
     File f;
     f._filename = filename;
@@ -191,6 +221,10 @@ void test_upload_f(string filename) {
     return;
 }
 
+/**
+ * @brief 实际的测试F元组上传函数并统计元组F上传时间
+ * @param filename 
+ */
 void test_upload(string filename) {
     struct timeval start, end;
     double interval;
@@ -208,6 +242,9 @@ void test_upload(string filename) {
     return;
 }
 
+/**
+ * @brief 测试角色权限吊销
+ */
 void test_role_revocation() {
     struct timeval start, end;
     double interval;
@@ -230,6 +267,9 @@ void test_role_revocation() {
     return;
 }
 
+/**
+ * @brief 测试用户权限吊销：委托云更新RK，FK元组
+ */
 void test_user_revocation_rk_fk() {
     struct timeval start, end;
     double interval;
@@ -251,6 +291,9 @@ void test_user_revocation_rk_fk() {
     ofile.close();
 };
 
+/**
+ * @brief 测试用户权限吊销：委托云更新F元组
+ */
 void test_user_revocation_f() {
     struct timeval start, end;
     double interval;
@@ -272,6 +315,9 @@ void test_user_revocation_f() {
     ofile.close();
 };
 
+/**
+ * @brief 测试用户权限吊销：整个过程
+ */
 void test_user_revocation() {
     std::cout << "function test_user_revocation" << std::endl;
     struct timeval start, end;
@@ -293,7 +339,7 @@ void test_user_revocation() {
     }
     ofile.close();
 };
-
+// TODO
 void test_server_en(int size, int layers) {
     string content;
     content.resize(size);
@@ -310,7 +356,7 @@ void test_server_en(int size, int layers) {
     interval = 1000000 * (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec);
     printf("%f\n", interval / 1000000.0);
 }
-
+// TODO
 void test_server_en_fork() {
     struct timeval start, end;
     double interval;
@@ -331,6 +377,9 @@ void test_server_en_fork() {
     return;
 }
 
+/**
+ * @brief 测试加密解密函数的正确性
+ */
 void test_aes() {
     string plain("qwertyuiop");
     string cipher1;
@@ -346,6 +395,9 @@ void test_aes() {
     cout << re2 << endl;
 }
 
+/**
+ * @brief 测试python下载文件
+ */
 void test_down() {
     struct timeval start, end;
     double interval;
@@ -359,6 +411,9 @@ void test_down() {
     printf("down time = %f\n", interval / 1000000.0);
 }
 
+/**
+ * @brief 测试python上传文件
+ */
 void test_up() {
     struct timeval start, end;
     double interval;

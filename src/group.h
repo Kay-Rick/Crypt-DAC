@@ -95,10 +95,10 @@ const std::string rk_ = "1_";
 const std::string fk_ = "2_";
 const std::string f_ = "3_";
 
-ZZ N; //安全系数
-ZZ rpk;
-ZZ rsk;
-ZZ fi;
+ZZ N; // 安全系数
+ZZ rpk; // 旋转密钥对的公钥 
+ZZ rsk; // 旋转密钥对的私钥
+ZZ fi;  // TODO
 /* 
 string to_string(int num) {
     std::stringstream ss;
@@ -139,7 +139,7 @@ void write_to_file(const string &filename, string &blocktext) {
 }
 
 /**
- * @brief 发送文件到服务器（更新）
+ * @brief 发送文件到服务器（更新操作）
  */
 void send_to_server() {
     string tmp = "python test.py upload " + UPDATES;
@@ -576,7 +576,7 @@ class RK {
     int version_role;
     std::string username;
     std::string rolename;
-    std::string crypto_rolekey; //用用户公閽????密后的role的私钥
+    std::string crypto_rolekey; //用用户公钥加密后的role的私钥
     std::string crypto_rolesign;
     std::string signature;
     std::string r;
@@ -751,7 +751,7 @@ void serial_to_file(RK &tuple) {
 }
 
 /**
- * @brief 将FK元组序列化到文件
+ * @brief 将FK元组序列化到文件并上传至云
  * @param tuple 
  */
 void serial_to_file(FK &tuple) {
@@ -767,7 +767,7 @@ void serial_to_file(FK &tuple) {
 }
 
 /**
- * @brief 将F元组序列化至文件
+ * @brief 将F元组序列化至文件并上传至云
  * @param tuple 
  */
 void serial_to_file(const F &tuple) {
@@ -921,6 +921,7 @@ class User {
      * @brief 序列化
      */
     void serial() {
+        // 二进制流的形式保存
         std::ofstream os_file((USERS + _username + suffix).c_str(), ios::binary);
         if (!os_file)
             cout << "open USER file fail";
@@ -1040,10 +1041,10 @@ void generate_aeskey(string &key) {
 }
 
 /**
- * @brief AES加密
- * @param k 
- * @param cipher 
- * @param plain 
+ * @brief AES加密生成加密后的内容
+ * @param k AES密钥
+ * @param cipher 加密后的内容
+ * @param plain 加密内容
  */
 void aes_e(string &k, string &cipher, string &plain) {
     SecByteBlock key(0, 16);
@@ -1058,7 +1059,7 @@ void aes_e(string &k, string &cipher, string &plain) {
 }
 
 /**
- * @brief AES解密
+ * @brief 实际的AES解密
  * @param k 
  * @param cipher 
  * @param plain 
@@ -1090,7 +1091,7 @@ void aes_file(cipher_fk &c, F &f, string &plain) {
     string iv(16, 0);
 
     string cipher(f.crypto_file);
-
+    // 进行层层解密
     for (int i = t - 1; i >= 0; i--) {
         string key;
         trans_zz_to_string(list[i], key);
@@ -1107,7 +1108,7 @@ void aes_file(cipher_fk &c, F &f, string &plain) {
 }
 
 /**
- * @brief AES加密文件
+ * @brief AES对内容plain加密成cipher
  * @param c 
  * @param cipher 
  * @param plain 

@@ -50,7 +50,7 @@ inline void generate_dsa(DSA::PrivateKey &role_signprivatekey, DSA::PublicKey &r
  */
 void generate_user(std::string username) {
     cout << "Generating " + username << endl;
-
+    // 生成公私钥对
     ElGamalKeys::PrivateKey privatekey;
     ElGamalKeys::PublicKey publickey;
     generate_elgamal(privatekey, publickey, false);
@@ -133,6 +133,7 @@ void generate_file(std::string filename) {
 
     DSA::PrivateKey privatekey;
     privatekey.Load(FileSource(sign_key_priv.c_str(), true, NULL, true /*binary*/).Ref());
+    // DSA签名私钥对已AES加密的文件进行签名
     file.sign(privatekey);
     serial_to_file(file);
 
@@ -156,7 +157,7 @@ void sign(DSA::PrivateKey &privatekey, std::string &message, std::string &signat
 
 
 /**
- * @brief 加密函数(elgamal加密)，对内部加密函数进行了进一步的封装
+ * @brief 加密函数(elgamal加密)，对内部加密函数进行了进一步的封装：将明文通过加密器加密成密文
  * @param encryptor 
  * @param plaintext 
  * @param ciphertext 
@@ -275,7 +276,7 @@ void init_topu(vector<std::string> &username, int usernum, vector<std::string> &
 }
 
 /**
- * @brief 将拓扑生成的映射关系初始化
+ * @brief 将拓扑生成的映射关系初始化并存入RK，FK元组
  * @param user_role 
  * @param role_file 
  */
@@ -292,10 +293,9 @@ void init(vector<pair_user_role> &user_role, vector<pair_role_file> &role_file) 
         Role role;
         user.unserial(username);
         role.unserial(rolename);
-
+        // 拿出用户u的公钥
         ElGamalKeys::PublicKey publickey;
         trans_elgamalpk_from_string(user._pbkey, publickey);
-        // TODO
         ElGamal::Encryptor encryptor(publickey);
         std::string rolekey;
         std::string rolesign;
@@ -323,7 +323,6 @@ void init(vector<pair_user_role> &user_role, vector<pair_role_file> &role_file) 
         file.unserial(filename);
         ElGamalKeys::PublicKey publickey;
         trans_elgamalpk_from_string(role._pbkey, publickey);
-        // TODO
         ElGamal::Encryptor encryptor(publickey);
 
         FK fk;
@@ -399,9 +398,17 @@ void File_read(string username, string filename, vector<pair_user_role> &user_ro
     return;
 }
 
+/**
+ * @brief user读文件测试
+ * @param username 
+ * @param filename 
+ * @param user_role 
+ * @param role_file 
+ */
 void File_read_test(string username, string filename, vector<pair_user_role> &user_role, vector<pair_role_file> &role_file) {
     pair_user_role tmp_user_role; //暂时存放rk相关信息
     pair_role_file tmp_role_file; //暂时存放FK相关信息
+    // 判断是否存在这样的元组，如果不存在说明这个用户没有这个文件的相关权限
     for (int i = 0; i < user_role.size(); i++) {
         if (username == user_role[i]._username) {
             for (int j = 0; j < role_file.size(); j++) {
@@ -431,6 +438,7 @@ void File_read_test(string username, string filename, vector<pair_user_role> &us
     trans_elgamalsk_from_string(user.get_pvkey(), privatekey_user);
     ElGamal::Decryptor decryptor_user(privatekey_user);
     string pvkey_role;
+    // 解密rk元组中被加密的角色密钥放进pvkey_role
     decrypt(decryptor_user, pvkey_role, rk.crypto_rolekey);
 
     //解密文件密钥K
@@ -438,6 +446,7 @@ void File_read_test(string username, string filename, vector<pair_user_role> &us
     trans_elgamalsk_from_string(pvkey_role, privatekey_role);
     ElGamal::Decryptor decryptor_role(privatekey_role);
     string key_list;
+    // 解密FK元组获取密钥列表key_list
     decrypt(decryptor_role, key_list, fk.cipher_fk);
     cipher_fk c;
     c.unserial(key_list);
@@ -447,7 +456,7 @@ void File_read_test(string username, string filename, vector<pair_user_role> &us
     test.resize(100000000);
     f.crypto_file = test;
     aes_file(c, f, plain);
-
+    // 解密出的内容最终放入到了plain里面
     //cout<<plain<<endl;
     return;
 }
@@ -471,10 +480,12 @@ int File_write(string filename, string &file, vector<pair_role_file> &role_file)
             trans_elgamalsk_from_string(r._pvkey, privatekey);
             ElGamal::Decryptor decryptor(privatekey);
             string tmp2;
+            // 解密FK元组获得密钥列表tmp2
             decrypt(decryptor, tmp2, tmp.cipher_fk);
             cipher_fk fk_help;
             fk_help.unserial(tmp2);
             string cipher;
+            // 对写入内容进行加密，加密后存入cipher
             aes_file_e(fk_help, cipher, file);
             write_to_file(UPDATES, cipher);
             break;
@@ -483,6 +494,7 @@ int File_write(string filename, string &file, vector<pair_role_file> &role_file)
     return 1;
 }
 
+// TODO
 int File_write_more(string filename, string &file, vector<pair_role_file> &role_file, int count) {
     for (int i = 0; i < role_file.size(); i++) {
         if (role_file[i]._filename == filename) {
@@ -508,7 +520,7 @@ int File_write_more(string filename, string &file, vector<pair_role_file> &role_
 }
 
 /**
- * @brief 用户权限撤销：更新F元组
+ * @brief 用户权限撤销：委托云更新F元组
  * @param username 
  * @param rolename 
  * @param user_role 
@@ -517,7 +529,8 @@ int File_write_more(string filename, string &file, vector<pair_role_file> &role_
 void User_revocation_F(std::string username, std::string rolename, vector<pair_user_role> &user_role, vector<pair_role_file> &role_file) {
     cout << "User_revocation_F..." << endl;
     AutoSeededRandomPool prng;
-    //第一层循环遍历属于role的??有file，第二层循环遍历相关file的所有role，重新生成FK，版本号??一
+    //第一层循环遍历属于role的所有file，第二层循环遍历相关file的所有role，重新生成FK，版本号加一
+    // TODO：理解注释掉的代码
     for (int i = 0; i < role_file.size(); i++) {
         if (role_file[i]._rolename == rolename) {
             //生成新的AES密钥
@@ -561,7 +574,7 @@ void User_revocation_F(std::string username, std::string rolename, vector<pair_u
 }
 
 /**
- * @brief 用户权限撤销：更新RK与FK元组
+ * @brief 用户权限撤销：委托云提供商更新RK与FK元组
  * @param username 
  * @param rolename 
  * @param user_role 
@@ -570,7 +583,7 @@ void User_revocation_F(std::string username, std::string rolename, vector<pair_u
 void User_revocation_RK_FK(std::string username, std::string rolename, vector<pair_user_role> &user_role, vector<pair_role_file> &role_file) {
     cout << "User_revocation_rk_fk..." << endl;
     AutoSeededRandomPool rng;
-    //为role生成elgamal公私钥对
+    // 为role生成elgamal公私钥对(生成新的角色密钥)
     ElGamalKeys::PrivateKey role_privatekey;
     ElGamalKeys::PublicKey role_publickey;
 
@@ -595,13 +608,14 @@ void User_revocation_RK_FK(std::string username, std::string rolename, vector<pa
     trans_dsa_signpk_to_string(pbsign, role_signpublickey);
 
     for (int i = 0; i < user_role.size(); i++) {
-        //将该user从user_role中删除??同时删除相应的RK
+        //将该user从user_role中删除并同时删除相应的RK
         if (user_role[i]._rolename == rolename) {
             if (user_role[i]._username == username) {
                 vector<pair_user_role>::iterator iter = user_role.begin();
                 iter = iter + i;
                 //user_role.erase(iter);
             } else {
+                // 委托云提供商为剩下的用户更新RK元组
                 User user;
                 user.unserial(user_role[i]._username);
                 ElGamalKeys::PublicKey user_publickey;
@@ -619,7 +633,7 @@ void User_revocation_RK_FK(std::string username, std::string rolename, vector<pa
     }
 
     AutoSeededRandomPool prng;
-    //第一层循环遍历属于role的??有file，第二层循环遍历相关file的所有role，重新生成FK，版本号??一
+    //第一层循环遍历属于role的所有file，第二层循环遍历相关file的所有role，重新生成FK，版本号加一
     for (int i = 0; i < role_file.size(); i++) {
         if (role_file[i]._rolename == rolename) {
             //生成新的AES密钥
@@ -652,6 +666,7 @@ void User_revocation_RK_FK(std::string username, std::string rolename, vector<pa
 
 /**
  * @brief 用户权限撤销，包含了F元组更新与RK、FK元组更新两个过程
+ * Core Function of User Revocation
  * @param username 
  * @param rolename 
  * @param user_role 
@@ -685,7 +700,7 @@ void User_revocation(std::string username, std::string rolename, vector<pair_use
     trans_dsa_signpk_to_string(pbsign, role_signpublickey);
 
     for (int i = 0; i < user_role.size(); i++) {
-        //将该user从user_role中删除??同时删除相应的RK
+        //将该user从user_role中删除并同时删除相应的RK
         if (user_role[i]._rolename == rolename) {
             if (user_role[i]._username == username) {
                 vector<pair_user_role>::iterator iter = user_role.begin();
@@ -709,7 +724,7 @@ void User_revocation(std::string username, std::string rolename, vector<pair_use
     }
 
     AutoSeededRandomPool prng;
-    //第一层循环遍历属于role的??有file，第二层循环遍历相关file的所有role，重新生成FK，版本号??一
+    //第一层循环遍历属于role的所有file，第二层循环遍历相关file的所有role，重新生成FK，版本号加一
     for (int i = 0; i < role_file.size(); i++) {
         if (role_file[i]._rolename == rolename) {
             //生成新的AES密钥
@@ -750,16 +765,7 @@ void User_revocation(std::string username, std::string rolename, vector<pair_use
             string data;
             tmp.serial(data);
             write_to_file(UPDATES, new_key_t);
-            //time test
-            /*
-			gettimeofday(&end, NULL);
-			interval = 1000000*(end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec);
-			printf("F time = %f\n", interval/1000000.0);
-			ofile<<interval/1000000.0<<endl;
-			ofile.close();
-			*/
-            //time test
-
+            // 找到要更新的file对应的角色重新加密
             for (int j = 0; j < role_file.size(); j++) {
                 if (role_file[j]._filename == role_file[i]._filename) {
                     Role role;
@@ -778,7 +784,14 @@ void User_revocation(std::string username, std::string rolename, vector<pair_use
     return;
 }
 
+/**
+ * @brief 回收角色名为rolename角色对文件名filename的文件权限
+ * @param rolename 
+ * @param filename 
+ * @param role_file 
+ */
 void Role_revocation(string rolename, string filename, vector<pair_role_file> &role_file) {
+    // 生成一个新的加密层
     string key;
     generate_aeskey(key);
     for (int i = 0; i < role_file.size(); i++) {
@@ -793,9 +806,11 @@ void Role_revocation(string rolename, string filename, vector<pair_role_file> &r
                 trans_elgamalsk_from_string(r._pvkey, privatekey);
                 ElGamal::Decryptor decryptor(privatekey);
                 string tmp;
+                // 解密文件密钥列表
                 decrypt(decryptor, tmp, fk.cipher_fk);
                 cipher_fk fk_help;
                 fk_help.unserial(tmp);
+                // 安全模式：添加加密层，使密钥列表多一个密钥
                 fk_help.k_t = key;
                 if (fk_help.t < 20)
                     fk_help.t++;

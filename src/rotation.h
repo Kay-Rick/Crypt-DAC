@@ -114,7 +114,7 @@ ZZ BDri(ZZ &rsk, ZZ &cur, ZZ &N) {
 }
 
 /**
- * @brief 根据公钥和当前密钥，让用户获得以前所有的密钥
+ * @brief 根据公钥和当前密钥，让用户获得密钥列表<k0, k1, ..., kt-1>
  * @param rpk 
  * @param cur 
  * @param t 
