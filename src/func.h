@@ -511,6 +511,7 @@ int File_write_more(string filename, string &file, vector<pair_role_file> &role_
             cipher_fk fk_help;
             fk_help.unserial(tmp2);
             string cipher;
+            // TODO
             aes_file_e_more_test(fk_help, cipher, file, count);
             write_to_file(UPDATES, cipher);
             break;
@@ -675,7 +676,7 @@ void User_revocation_RK_FK(std::string username, std::string rolename, vector<pa
 void User_revocation(std::string username, std::string rolename, vector<pair_user_role> &user_role, vector<pair_role_file> &role_file) {
     cout << "User_revocation..." << endl;
     AutoSeededRandomPool rng;
-    //为role生成elgamal公私钥对
+    //TODO：为role生成elgamal公私钥对（新密钥对文件哪来？）
     ElGamalKeys::PrivateKey role_privatekey;
     ElGamalKeys::PublicKey role_publickey;
 
@@ -717,7 +718,8 @@ void User_revocation(std::string username, std::string rolename, vector<pair_use
                 encrypt(encryptor, pvkey, cipherpvkey);
                 encrypt(encryptor, pvsign, cipherpvsign);
                 write_to_file(UPDATES, cipherpvkey);
-                write_to_file(UPDATES, cipherpvsign); //
+                write_to_file(UPDATES, cipherpvsign); 
+                // TODO ：version含义
                 user_role[i]._version++;
             }
         }

@@ -1,14 +1,22 @@
 #include "func.h"
-
+// 临时存储user-role映射关系
 vector<pair_user_role> user_role;
+// 存储role-file映射关系
 vector<pair_role_file> role_file;
+// 记录用户权限吊销总时间消耗
 const string user_revocation_time = "//home//lyc//ntl//key_rotation_version//user_revocation_time_ro.txt";
+// 记录角色权限吊销时间消耗
 const string role_revocation_time = "//home//lyc//ntl//key_rotation_version//role_revocation_time_ro.txt";
+// 记录用户读取文件时间消耗
 const string file_read_time = "//home//lyc//ntl//key_rotation_version//file_read_time_ro.txt";
+// 记录用户写文件时间消耗
 const string file_write_time = "//home//lyc//ntl//key_rotation_version//file_write_time_ro.txt";
 const string file_write_time_more = "//home//lyc//ntl//key_rotation_version//file_write_time_more_ro.txt";
+// 记录测试并统计元组F上传时间
 const string upload_file_time = "//home//lyc//ntl//key_rotation_version//upload_file_time_ro.txt";
+// 记录用户权限吊销更新F元组时间消耗
 const string user_revocation_time_f = "//home//lyc//ntl//key_rotation_version//user_revocation_time_f_ro.txt";
+// 记录用户权限吊销更新RK，FK元组时间消耗
 const string user_revocation_time_rk_fk = "//home//lyc//ntl//key_rotation_version//user_revocation_time_rk_fk_ro.txt";
 
 /**
@@ -35,7 +43,7 @@ void test_genkey() {
 }
 
 /**
- * @brief 生成旋转密钥对的公钥rpk和私钥rsk
+ * @brief 生成加解密的基本参数(旋转密钥对的公钥rpk和私钥rsk),必不可少
  */
 void test_gen() {
     ZZ p = gen_prime();
@@ -149,9 +157,8 @@ void test_write() {
     for (int i = 0; i < count; i++) {
         string line = "rm ~/ntl/key_rotation_version/update.txt";
         system(line.c_str());
-
         gettimeofday(&start, NULL);
-        // TODO : 未验证user写入权限，加密层数变化？
+        // TODO 未验证用户是否有权限
         File_write("file1", content, role_file);
         send_to_server();
         gettimeofday(&end, NULL);
@@ -163,7 +170,7 @@ void test_write() {
     return;
 }
 
-// TODO
+// TODO 含义
 void test_write_20() {
     string content;
     content.resize(10010000);
@@ -251,10 +258,8 @@ void test_role_revocation() {
     int count = 10;
     ofstream ofile(role_revocation_time.c_str(), ios::binary);
     for (int i = 0; i < count; i++) {
-
         string line = "rm ~/ntl/key_rotation_version/update.txt";
         system(line.c_str());
-
         gettimeofday(&start, NULL);
         Role_revocation("role1", "file1", role_file);
         send_to_server();
@@ -331,7 +336,7 @@ void test_user_revocation() {
 
         gettimeofday(&start, NULL);
         User_revocation("user1", "role1", user_role, role_file);
-        //send_to_server();
+        send_to_server();
         gettimeofday(&end, NULL);
         interval = 1000000 * (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec);
         printf("User_revocation time = %f\n", interval / 1000000.0);

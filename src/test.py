@@ -7,7 +7,7 @@ from time import clock
 #address = 'http://122.152.202.95:5001/'
 address = 'http://123.206.74.17:5001/'
 
-
+# TODO upload到服务器哪个位置？
 def upload(filename):
     #url = 'http://115.159.84.230:5001/'
     url = address

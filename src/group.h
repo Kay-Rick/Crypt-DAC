@@ -84,11 +84,17 @@ const std::string sign_key_priv = "//home//lyc//ntl//sign_key_priv.txt";
 const std::string elgamal_key_pub = "//home//lyc//ntl//elgamal_key_pub.txt";
 const std::string elgamal_key_priv = "//home//lyc//ntl//elgamal_key_priv.txt";
 //const std::string location="//home//lyc//new_crypt_data//";
+// 存储RK，FK，F元组的位置
 const std::string TUPLES = "//home//lyc//ntl//key_rotation_version//tuples//";
+// User序列化保存文件的位置
 const std::string USERS = "//home//lyc//ntl//key_rotation_version//users//";
+// Role序列化保存文件的位置
 const std::string ROLES = "//home//lyc//ntl//key_rotation_version//roles//";
+// TODO
 const std::string KEYS = "//home//lyc//ntl//key_rotation_version//keys//";
+// File序列化保存文件的位置
 const std::string FILES = "//home//lyc//ntl//key_rotation_version//files//";
+// 向云提供更新的文件存放位置
 const std::string UPDATES = "//home//lyc//ntl//key_rotation_version//update.txt";
 const std::string suffix = ".txt";
 const std::string rk_ = "1_";
@@ -192,7 +198,7 @@ struct MD {
     ZZ r;
     ZZ s;
 };
-
+// TODO
 class IntegerGroup {
   public:
     ZZ p;
@@ -236,7 +242,7 @@ void group::IntegerGroup::paramgen(int bits, int s) {
 	cout<<q<<endl;
 	*/
 }
-
+// TODO
 NTL::ZZ group::IntegerGroup::randomGen() {
     NTL::ZZ g;
     while (true) {
@@ -347,7 +353,7 @@ group::MD group::ChamHash::forge(std::string m, MD md) {
 }
 
 
-// TODO 全局变量
+// 全局变量
 group::ChamHash my_hash;
 
 /**
@@ -829,7 +835,7 @@ class pair_user_role {
   public:
     std::string _username;
     std::string _rolename;
-    int _version; //瀵????RK元组的最新版本号
+    int _version; // 保存RK元组的最新版本号
 
     pair_user_role() : _username(""), _rolename(""), _version(0) {}
     pair_user_role(std::string username, std::string rolename, int ver) : _username(username), _rolename(rolename), _version(ver) {}
@@ -1162,6 +1168,12 @@ void aes_file_e_more_test(cipher_fk &c, string &cipher, string &plain, int count
     return;
 }
 
+/**
+ * @brief 加密count次
+ * @param cipher 
+ * @param plain 
+ * @param count 
+ */
 void aes_e_more_test(string &cipher, string &plain, int count) {
     SecByteBlock key(0, 16);
     SecByteBlock iv(0, 16);
