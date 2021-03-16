@@ -1,4 +1,4 @@
 all:
-	g++-4.8 main.cpp -o main -lntl -lgmp -lm -lcryptopp -I /home/lyc/include/cryptopp/ -I /home/lyc/ntl/ -L /usr/local/lib -lboost_serialization
-aes:
-	g++ aes.cpp -o test -lntl -lgmp -lm -I /home/lyc/ntl/
+	g++ main.cpp -o main -I /usr/local/include/cryptopp -I /home/rick/include/ -L /home/rick/lib -lboost_serialization -lntl -lgmp -lcryptopp -lm
+# aes:
+# 	g++ aes.cpp -o test -lntl -lgmp -lm -I /home/rick/include/

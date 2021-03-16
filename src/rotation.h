@@ -16,7 +16,7 @@
 #include <vector>
 
 #include <NTL/ZZ.h>
-#pragma comment(lib, "myntl.lib")
+#pragma comment(lib, "ntl.lib")
 #pragma comment(lib, "cryptlib.lib")
 using namespace std;
 using namespace NTL;

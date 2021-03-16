@@ -4,20 +4,20 @@ vector<pair_user_role> user_role;
 // 存储role-file映射关系
 vector<pair_role_file> role_file;
 // 记录用户权限吊销总时间消耗
-const string user_revocation_time = "//home//lyc//ntl//key_rotation_version//user_revocation_time_ro.txt";
+const string user_revocation_time = "//home//rick//ntl//key_rotation_version//user_revocation_time_ro.txt";
 // 记录角色权限吊销时间消耗
-const string role_revocation_time = "//home//lyc//ntl//key_rotation_version//role_revocation_time_ro.txt";
+const string role_revocation_time = "//home//rick//ntl//key_rotation_version//role_revocation_time_ro.txt";
 // 记录用户读取文件时间消耗
-const string file_read_time = "//home//lyc//ntl//key_rotation_version//file_read_time_ro.txt";
+const string file_read_time = "//home//rick//ntl//key_rotation_version//file_read_time_ro.txt";
 // 记录用户写文件时间消耗
-const string file_write_time = "//home//lyc//ntl//key_rotation_version//file_write_time_ro.txt";
-const string file_write_time_more = "//home//lyc//ntl//key_rotation_version//file_write_time_more_ro.txt";
+const string file_write_time = "//home//rick//ntl//key_rotation_version//file_write_time_ro.txt";
+const string file_write_time_more = "//home//rick//ntl//key_rotation_version//file_write_time_more_ro.txt";
 // 记录测试并统计元组F上传时间
-const string upload_file_time = "//home//lyc//ntl//key_rotation_version//upload_file_time_ro.txt";
+const string upload_file_time = "//home//rick//ntl//key_rotation_version//upload_file_time_ro.txt";
 // 记录用户权限吊销更新F元组时间消耗
-const string user_revocation_time_f = "//home//lyc//ntl//key_rotation_version//user_revocation_time_f_ro.txt";
+const string user_revocation_time_f = "//home//rick//ntl//key_rotation_version//user_revocation_time_f_ro.txt";
 // 记录用户权限吊销更新RK，FK元组时间消耗
-const string user_revocation_time_rk_fk = "//home//lyc//ntl//key_rotation_version//user_revocation_time_rk_fk_ro.txt";
+const string user_revocation_time_rk_fk = "//home//rick//ntl//key_rotation_version//user_revocation_time_rk_fk_ro.txt";
 
 /**
  * @brief 产生公钥私钥对存到文件中
@@ -424,7 +424,7 @@ void test_up() {
     double interval;
     gettimeofday(&start, NULL);
 
-    string tmp = "python test.py upload //home//lyc//ntl//File_10M.txt";
+    string tmp = "python test.py upload //home//rick//ntl//File_10M.txt";
     int status = system(tmp.c_str());
 
     gettimeofday(&end, NULL);
@@ -436,7 +436,7 @@ void test_user_revocation_rk_fk_user() {
     struct timeval start, end;
     double interval;
     int count = 1;
-    string file = "//home//lyc//ntl//user_revocation_rk_fk_user_ro.txt";
+    string file = "//home//rick//ntl//user_revocation_rk_fk_user_ro.txt";
     ofstream ofile(file.c_str(), ios::binary);
     for (int i = 40; i <= 200; i += 40) {
 
@@ -462,7 +462,7 @@ void test_user_revocation_rk_fk_role() {
     struct timeval start, end;
     double interval;
     int count = 1;
-    string file = "//home//lyc//ntl//user_revocation_rk_fk_role_ro.txt";
+    string file = "//home//rick//ntl//user_revocation_rk_fk_role_ro.txt";
     ofstream ofile(file.c_str(), ios::binary);
     for (int i = 1; i <= 9; i++) {
 
@@ -488,7 +488,7 @@ void test_user_revocation_rk_fk_file() {
     struct timeval start, end;
     double interval;
     int count = 1;
-    string file = "//home//lyc//ntl//user_revocation_rk_fk_file_ro.txt";
+    string file = "//home//rick//ntl//user_revocation_rk_fk_file_ro.txt";
     ofstream ofile(file.c_str(), ios::binary);
     for (int i = 40; i <= 200; i += 40) {
 
@@ -511,10 +511,9 @@ void test_user_revocation_rk_fk_file() {
 };
 
 int main() {
-    //test_genkey();
-
+    // test_genkey();
     test_gen(); //very important for many functions
-
+    // test_rotation();
     //test_user_revocation_rk_fk_user();
     //test_user_revocation_rk_fk_role();
     //test_user_revocation_rk_fk_file();
@@ -523,10 +522,10 @@ int main() {
     //test_up();
     //test_down();
     //test_user_revocation();
-
+    test_aes();
     //test_user_revocation_rk_fk();
     //test_user_revocation_f();
-    //test_read();
+    // test_read();
     //test_write();
     //test_role_revocation();
     //string file_upload("upload_file");
@@ -534,6 +533,6 @@ int main() {
     //test_read();
     //test_write();
     //test_write_20();
-    test_server_en_fork();
+    // test_server_en_fork();
     return 0;
 }

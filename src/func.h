@@ -676,7 +676,7 @@ void User_revocation_RK_FK(std::string username, std::string rolename, vector<pa
 void User_revocation(std::string username, std::string rolename, vector<pair_user_role> &user_role, vector<pair_role_file> &role_file) {
     cout << "User_revocation..." << endl;
     AutoSeededRandomPool rng;
-    //TODO：为role生成elgamal公私钥对（新密钥对文件哪来？）
+    // 为role生成elgamal公私钥对（test_genkey()函数会进行初始化公私钥对）
     ElGamalKeys::PrivateKey role_privatekey;
     ElGamalKeys::PublicKey role_publickey;
 
@@ -719,7 +719,7 @@ void User_revocation(std::string username, std::string rolename, vector<pair_use
                 encrypt(encryptor, pvsign, cipherpvsign);
                 write_to_file(UPDATES, cipherpvkey);
                 write_to_file(UPDATES, cipherpvsign); 
-                // TODO ：version含义
+                // 使用版本号来区别从而实现惰性删除
                 user_role[i]._version++;
             }
         }

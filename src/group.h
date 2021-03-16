@@ -74,28 +74,28 @@ using namespace NTL;
 using namespace CryptoPP;
 
 //定义常用的字符串以方便后面程序使用
-const std::string signpk_of_admin = "//home//lyc//ntl//signpk_of_admin.txt";
-const std::string signsk_of_admin = "//home//lyc//ntl//signsk_of_admin.txt";
-const std::string pkhash_g = "//home//lyc//ntl//pkhash_g.txt";
-const std::string pkhash_y = "//home//lyc//ntl//pkhash_y.txt";
-const std::string skhash = "//home//lyc//ntl//skhash.txt";
-const std::string sign_key_pub = "//home//lyc//ntl//sign_key_pub.txt";
-const std::string sign_key_priv = "//home//lyc//ntl//sign_key_priv.txt";
-const std::string elgamal_key_pub = "//home//lyc//ntl//elgamal_key_pub.txt";
-const std::string elgamal_key_priv = "//home//lyc//ntl//elgamal_key_priv.txt";
-//const std::string location="//home//lyc//new_crypt_data//";
+const std::string signpk_of_admin = "//home//rick//ntl//signpk_of_admin.txt";
+const std::string signsk_of_admin = "//home//rick//ntl//signsk_of_admin.txt";
+const std::string pkhash_g = "//home//rick//ntl//pkhash_g.txt";
+const std::string pkhash_y = "//home//rick//ntl//pkhash_y.txt";
+const std::string skhash = "//home//rick//ntl//skhash.txt";
+const std::string sign_key_pub = "//home//rick//ntl//sign_key_pub.txt";
+const std::string sign_key_priv = "//home//rick//ntl//sign_key_priv.txt";
+const std::string elgamal_key_pub = "//home//rick//ntl//elgamal_key_pub.txt";
+const std::string elgamal_key_priv = "//home//rick//ntl//elgamal_key_priv.txt";
+//const std::string location="//home//rick//new_crypt_data//";
 // 存储RK，FK，F元组的位置
-const std::string TUPLES = "//home//lyc//ntl//key_rotation_version//tuples//";
+const std::string TUPLES = "//home//rick//ntl//key_rotation_version//tuples//";
 // User序列化保存文件的位置
-const std::string USERS = "//home//lyc//ntl//key_rotation_version//users//";
+const std::string USERS = "//home//rick//ntl//key_rotation_version//users//";
 // Role序列化保存文件的位置
-const std::string ROLES = "//home//lyc//ntl//key_rotation_version//roles//";
+const std::string ROLES = "//home//rick//ntl//key_rotation_version//roles//";
 // TODO
-const std::string KEYS = "//home//lyc//ntl//key_rotation_version//keys//";
+const std::string KEYS = "//home//rick//ntl//key_rotation_version//keys//";
 // File序列化保存文件的位置
-const std::string FILES = "//home//lyc//ntl//key_rotation_version//files//";
+const std::string FILES = "//home//rick//ntl//key_rotation_version//files//";
 // 向云提供更新的文件存放位置
-const std::string UPDATES = "//home//lyc//ntl//key_rotation_version//update.txt";
+const std::string UPDATES = "//home//rick//ntl//key_rotation_version//update.txt";
 const std::string suffix = ".txt";
 const std::string rk_ = "1_";
 const std::string fk_ = "2_";
