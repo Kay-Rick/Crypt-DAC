@@ -710,7 +710,7 @@ class pair_user_role {
   public:
     std::string _username;
     std::string _rolename;
-    int _version; //瀵????RK元组的最新版本号
+    int _version;
 
     pair_user_role() : _username(""), _rolename(""), _version(0) {}
     pair_user_role(std::string username, std::string rolename, int ver) : _username(username), _rolename(rolename), _version(ver) {}
